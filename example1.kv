@@ -1,0 +1,615 @@
+#:import MDDropdownMenu kivymd.uix.menu.MDDropdownMenu
+#:import Spiral graphics
+#:import Two_Spiral graphics
+#:import MDLabel kivymd.uix.label
+#:import MDFloatingActionButton kivymd.uix.button
+
+<Root>:
+    id: 'sm'
+    Main:
+        name: 'main'
+    New_Patient:
+        name: 'new'
+    One_Spiral:
+        name: 'one_spiral'
+    Copy_Spiral:
+        name: 'copy_spiral'
+    Bad_Habits:
+        name: 'bad_habits'
+    Methods_Hands:
+        name: 'methods_hands'
+
+
+<Main>:
+    id: main
+    spacing: 6
+    padding: 10
+    MDToolbar:
+        id: toolbar
+        title: 'Выберите действие'
+        md_bg_color: app.theme_cls.primary_color
+        elevation: 100
+        height: root.height / 10
+        font_size: root.height / 60
+        pos_hint: {"top": 1}
+    BoxLayout:
+        id: box
+        padding: dp(10)
+        size_hint: 1, None
+        size: self.minimum_size
+        spacing: dp(10)
+        orientation: "vertical"
+        pos_hint: {"center_x": .5, "center_y": .5}
+        MDRectangleFlatIconButton:
+            id: btn_new_pat
+            text: 'Создать пациента'
+#            height: root.height / 15
+            width: (20 * self.font_size)
+            font_stile: 'H1'
+#            font_size: root.height / 60
+            pos_hint: {"center_x": .5}
+            icon: "account-plus"
+            on_press:
+                root.manager.current = 'new'
+        MDRectangleFlatIconButton:
+            text: "Выбрать пациента"
+            increment_width: 180
+            height: root.height / 15
+            width: (25 * self.font_size)
+            font_size: root.height / 60
+            bold: 'True'
+            icon: 'account-check'
+            on_press: main.build()
+            pos_hint: {"center_x": .5}
+
+        MDRectangleFlatIconButton:
+            pos_hint: {"center_x": .5}
+            icon: "exit-to-app"
+            text: 'Выход'
+            height: root.height / 15
+            font_size: root.height / 60
+            width: (12 * self.font_size)
+            on_press:
+                app.stop()
+
+
+
+<New_Patient>:
+    spacing: 0
+    padding: 0
+    orientation: 'vertical'
+    MDToolbar:
+        id: toolbar
+        title: 'Введите данные пациента'
+        md_bg_color: app.theme_cls.primary_color
+        height: root.height / 10
+        font_size: root.height / 60
+        elevation: 100
+        pos_hint: {"top": 1}
+    BoxLayout:
+        id: box
+        padding: 20
+        size_hint: 1, None
+        size: self.minimum_size
+        spacing: 20
+        orientation: "vertical"
+        pos_hint: {"center_x": .5, "center_y": .5}
+        MDTextField:
+            focus: False
+            id: family_name
+#            size: root.width - 100, dp(30)
+            width: (root.width - dp(100))
+            cursor_color: app.theme_cls.primary_color
+            pos_hint: {"center_x": 0.5}
+            foreground_color: app.theme_cls.primary_color
+            normal_color: app.theme_cls.accent_color
+            height: root.height / 20
+            font_size: root.height / 60
+#            icon_left:''
+#            icon_right:''
+            hint_text: "Фамилия"
+        MDTextField:
+            focus: False
+            id: name
+            size: root.width - dp(40), dp(30)
+            cursor_color: app.theme_cls.primary_color
+            pos_hint: {"center_x": 0.5}
+            foreground_color: app.theme_cls.primary_color
+            normal_color: app.theme_cls.accent_color
+            height: root.height / 20
+            font_size: root.height / 60
+            icon_left:''
+            icon_right:''
+            hint_text: "Имя"
+        MDTextField:
+            focus: False
+            id: father_name
+            size: root.width - dp(40), dp(30)
+            cursor_color: app.theme_cls.primary_color
+            pos_hint: {"center_x": 0.5}
+            foreground_color: app.theme_cls.primary_color
+            normal_color: app.theme_cls.accent_color
+            height: root.height / 20
+            font_size: root.height / 60
+            icon_left:''
+            icon_right:''
+            hint_text: "Отчество"
+
+        MDTextField:
+            focus: False
+            id: dob
+#            size: root.width - dp(40), dp(30)
+            cursor_color: app.theme_cls.primary_color
+            pos_hint: {"center_x": 0.5}
+            foreground_color: app.theme_cls.primary_color
+            normal_color: app.theme_cls.accent_color
+#            height: root.height / 20
+#            font_size: root.height / 60
+            font_stile: 'H1'
+
+            icon_left: ""
+            icon_right:''
+            hint_text: "Дата рождения"
+
+        MDLabel:
+            text: "Диагноз:"
+            height: self.texture_size[1]
+            pos_hint: {"center_y": .5}
+#            font_size: root.height / 30
+            font_stile: 'H1'
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
+
+        MDRectangleFlatIconButton:
+            id: diagnos
+            text: "Здоров"
+            size: root.width - dp(40), dp(30)
+            pos_hint: {"center_x": 0.5}
+            height: root.height / 15
+#            font_size: root.height / 60
+            font_stile: 'H1'
+            icon: "arrow-down-drop-circle-outline"
+            on_press: root.diagnos_dropmenu()
+
+
+        MDLabel:
+            text: "Пол"
+            height: self.texture_size[1]
+            pos_hint: {"center_y": .5}
+            font_size: root.height / 30
+
+        GridLayout:
+            size_hint_y: None
+            height: self.minimum_height
+            cols: 2
+            padding: 0
+            spacing: 0
+
+            StyleItemCheck:
+                group: "Sex"
+                text: 'Мужской'
+                id: Men
+                callback: root.callback_sex
+                font_size: root.height / 30
+
+            StyleItemCheck:
+                group: "Sex"
+                text: "Женский"
+                id: Women
+                callback: root.callback_sex
+
+
+
+        MDLabel:
+            text: "Доминирующая рука"
+            height: self.texture_size[1]
+            pos_hint: {"center_y": .5}
+            font_size: root.height / 30
+
+        GridLayout:
+            size_hint_y: None
+            height: self.minimum_height
+            cols: 3
+            padding: 0
+            spacing: 0
+
+            StyleItemCheck:
+                group: "Hand"
+                id: Right
+                text: 'Правая'
+                callback: root.callback_hand
+                font_size: root.height / 30
+
+            StyleItemCheck:
+                group: "Hand"
+                id: Left
+                text: "Левая"
+                callback: root.callback_hand
+
+            StyleItemCheck:
+                group: "Hand"
+                id: AmbiDexter
+                text: "Обе"
+                callback: root.callback_hand
+
+
+
+
+
+    Widget:
+
+    BoxLayout:
+        orientation: 'horizontal'
+        pos_hint: {"center_x": 0.5}
+        padding: 15
+        #spacing: 20
+        MDRectangleFlatIconButton:
+            text: 'Вернуться назад'
+            icon: 'arrow-left'
+            width: (root.width-30) * 0.5
+            height: root.height / 15
+            font_size: root.height / 80
+            pos_hint: {"center_x": .5}
+            on_press:
+                root.manager.current = 'main'
+
+        MDRectangleFlatIconButton:
+            id: new_pat
+            text:'Создать пациента'
+            icon: 'folder-plus'
+            width: (root.width-30) * 0.5
+            height: root.height / 15
+            font_size: root.height / 80
+            pos_hint: {"center_x": .5}
+            md_bg_color: app.theme_cls.primary_color
+            text_color: 1, 1, 1, 1
+            on_press:
+                root.new_folder()
+
+
+
+<One_Spiral>:
+    id: one_spiral
+    padding: dp(10)
+    spacing: dp(10)
+
+    MDToolbar:
+        id: toolbar
+        title: 'Метод и рука'
+        md_bg_color: app.theme_cls.primary_color
+        height: root.height / 10
+        font_size: root.height / 60
+        elevation: 100
+        pos_hint: {"top": 1}
+        left_action_items: [["arrow-left", lambda x: root.to_main()]]
+
+    Spiral:
+        id: spiral
+
+    MDLabel:
+        id: counter
+        font_size: root.height / 20
+        height: dp(50)
+        size_hint: (1, None)
+        text: ""
+        theme_text_color: 'Error'
+        font_stile: 'H1'
+        background_color: 1,1,0,1
+        halign: 'center'
+        valign: 'middle'
+        pos_hint: {"center_x": .5, "center_y": .95}
+    BoxLayout:
+        orientation: 'horizontal'
+        pos_hint: {"center_x": 0.5}
+        padding: 15
+        MDRectangleFlatIconButton:
+            text: 'Повторить'
+            icon: 'reload'
+            width: (toolbar.width/2)-15
+            height: root.height / 15
+            font_size: root.height / 60
+            pos_hint: {"center_x": .5}
+            on_press:
+                root.manager.current = 'bad_habits'
+                root.on_leave()
+                
+        MDRectangleFlatIconButton:
+            pos_hint: {"center_x": 0.5}
+            text: 'Продолжить'
+            icon: 'account-arrow-right'
+            width: (toolbar.width/2)-15
+            height: root.height / 15
+            font_size: root.height / 60
+            md_bg_color: app.theme_cls.primary_color
+            text_color: 1, 1, 1, 1
+            on_press:
+                root.on_leave()
+
+
+<Copy_Spiral>:
+    id: copy_spiral
+    padding: dp(10)
+    spacing: dp(10)
+
+    MDToolbar:
+        id: toolbar
+        title: 'Копия'
+        md_bg_color: app.theme_cls.primary_color
+        height: root.height / 10
+        font_size: root.height / 60
+        elevation: 100
+        pos_hint: {"top": 1}
+
+    Two_Spiral:
+        id: spiral
+
+    MDLabel:
+        id: counter
+        font_size: root.height / 20
+        height: dp(50)
+        size_hint: (1, None)
+        text: ""
+        theme_text_color: 'Error'
+        font_stile: 'H1'
+        background_color: 1,1,0,1
+        halign: 'center'
+        valign: 'middle'
+        pos_hint: {"center_x": .5, "center_y": .95}
+    MDSeparator:
+        pos_hint: {"center_x": .5, "center_y": .51}
+    BoxLayout:
+        orientation: 'horizontal'
+        pos_hint: {"center_x": 0.5}
+        padding: 15
+        MDRectangleFlatIconButton:
+            pos_hint: {"center_x": 0.5}
+            text: 'Повторить'
+            icon: 'reload'
+            width: (toolbar.width/2)-15
+            height: root.height / 15
+            font_size: root.height / 60
+            on_press:
+                root.manager.current = 'bad_habits'
+                root.on_leave()
+
+        MDRectangleFlatIconButton:
+            pos_hint: {"center_x": 0.5}
+            text: 'Завершить'
+            icon: 'check'
+            width: (toolbar.width/2)-15
+            height: root.height / 15
+            font_size: root.height / 60
+            md_bg_color: app.theme_cls.primary_color
+            text_color: 1, 1, 1, 1
+            on_press:
+                root.manager.current = 'main'
+                root.on_leave()
+
+<Bad_Habits>:
+    id: bad_habits
+    padding: dp(10)
+    spacing: dp(10)
+    orientation: 'vertical'
+
+    MDToolbar:
+        title: 'Искажающие обстоятельства'
+        md_bg_color: app.theme_cls.primary_color
+        height: root.height / 10
+        font_size: root.height / 60
+        elevation: 100
+        pos_hint: {"top": 1}
+
+    MDLabel:
+        text: "Выберите все пункты, которые Вы применяли за 2 часа до исследования:"
+        size_hint_y: None
+        height: self.texture_size[1]
+        pos_hint: {"center_x": .55, "center_y": .85}
+        font_size: root.height / 30
+
+    GridLayout:
+        size_hint_y: None
+        height: self.minimum_height
+        pos_hint: {"center_y": .5}
+        cols: 1
+        padding: 0
+        spacing: 0
+
+        StyleItemCheck:
+            text: "Кофе"
+            group: "C"
+            id: Coffee
+            callback: root.callback
+
+        StyleItemCheck:
+            text: "Энергетические напитки"
+            group: "E"
+            id: Energetic
+            callback: root.callback
+
+        StyleItemCheck:
+            text: "Сигареты, кальян, сигары и тд"
+            group: "S"
+            id: Smoke
+            callback: root.callback
+
+        StyleItemCheck:
+            text: "Алкогольсодержащие напитки"
+            group: "A"
+            id: Alcohol
+            callback: root.callback
+
+        StyleItemCheck:
+            text: "Спиртосодержащие лекарства (валокордин, валосердин и тд)"
+            group: "M"
+            id: Medicine
+            callback: root.callback
+
+        StyleItemCheck:
+            text: "Физические нагрузки"
+            group: "F"
+            id: PhisicalExercise
+            callback: root.callback
+
+        StyleItemCheck:
+            text: "Ничего из вышеперечисленного"
+            group: "N"
+            id: Nothing
+            callback: root.callback
+
+    BoxLayout:
+        orientation: 'horizontal'
+        pos_hint: {"center_x": 0.5}
+        padding: 15
+        MDRectangleFlatIconButton:
+            pos_hint: {"center_x": 0.5}
+            text: 'Назад'
+            icon: 'keyboard-backspace'
+            width: (root.width-30) * 0.5
+            height: root.height / 15
+            font_size: root.height / 60
+            on_press:
+                root.manager.current = 'main'
+
+        MDRectangleFlatIconButton:
+            pos_hint: {"center_x": 0.5}
+            text: 'Подтвердить'
+            icon: 'check'
+            width: (root.width-30) * 0.5
+            height: root.height / 15
+            font_size: root.height / 60
+            md_bg_color: app.theme_cls.primary_color
+            text_color: 1, 1, 1, 1
+            on_press:
+                root.confirm()
+
+
+<Methods_Hands>:
+    id: methods_hands
+    padding: dp(10)
+    spacing: dp(10)
+    orientation: 'vertical'
+
+    MDToolbar:
+        title: 'Метод и рука'
+        md_bg_color: app.theme_cls.primary_color
+        height: root.height / 10
+        font_size: root.height / 60
+        elevation: 100
+        pos_hint: {"top": 1}
+
+    GridLayout:
+        size_hint_y: None
+        height: self.minimum_height
+        pos_hint: {"center_y": .5}
+        cols: 1
+        padding: 0
+        spacing: 0
+
+        MDLabel:
+            text: "Выберите руку для рисования:"
+            size_hint_y: None
+            height: self.texture_size[1]
+            pos_hint: {"center_x": .55, "center_y": .85}
+            font_size: root.height / 30
+
+        StyleItemCheck:
+            text: "Левая"
+            group: "Hands"
+            id: Left
+            callback: root.callback_hands
+
+        StyleItemCheck:
+            text: "Правая"
+            group: "Hands"
+            id: Right
+            callback: root.callback_hands
+
+        MDSeparator:
+
+        MDLabel:
+            text: "Выберите метод:"
+            size_hint_y: None
+            height: self.texture_size[1]
+            pos_hint: {"center_x": .55, "center_y": .85}
+            font_size: root.height / 30
+
+        StyleItemCheck:
+            text: "Спираль"
+            group: "Methods"
+            id: Spiral
+            callback: root.callback_methods
+
+        StyleItemCheck:
+            text: "Копия"
+            group: "Methods"
+            id: Copy
+            callback: root.callback_methods
+
+        StyleItemCheck:
+            text: "Врисование"
+            group: "Methods"
+            id: InDraw
+            callback: root.callback_methods
+
+    BoxLayout:
+        orientation: 'horizontal'
+        pos_hint: {"center_x": 0.5}
+        padding: 15
+        MDRectangleFlatIconButton:
+            pos_hint: {"center_x": 0.5}
+            text: 'Назад'
+            icon: 'keyboard-backspace'
+            width: (root.width-30) * 0.5
+            height: root.height / 15
+            font_size: root.height / 60
+            on_press:
+                root.manager.current = 'main'
+
+        MDRectangleFlatIconButton:
+            pos_hint: {"center_x": 0.5}
+            text: 'Подтвердить'
+            icon: 'keyboard-return'
+            width: (root.width-30) * 0.5
+            height: root.height / 15
+            font_size: root.height / 60
+            md_bg_color: app.theme_cls.primary_color
+            text_color: 1, 1, 1, 1
+            on_press:
+                root.confirm()
+
+
+
+<StyleLabel@MDLabel>:
+    size_hint_y: None
+    height: self.texture_size[1]
+#    font_size: 30
+
+
+<StyleItemCheck@BoxLayout>:
+    group: ""
+    text: ""
+    active: False
+    size_hint_y: None
+    height: self.minimum_height
+    spacing: 0
+    padding: 0
+
+    MDCheckbox:
+        id: check
+        group: root.group
+        active: root.active
+        size_hint: None, None
+        size: 100, 80
+        pos_hint: {"center_y": .5}
+        checkbox_icon_normal: 'checkbox-blank-outline'
+        checkbox_icon_down: 'checkbox-marked-outline'
+        radio_icon_normal: 'checkbox-blank-outline'
+        radio_icon_down: 'checkbox-marked-outline'
+        on_active: root.callback(root.text, *args)
+
+    StyleLabel:
+        id: label
+        text: root.text
+        pos_hint: {"center_y": .5}
+        font_stile: 'H1'
+

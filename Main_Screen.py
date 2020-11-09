@@ -20,8 +20,6 @@ class Main(Screen):
             Two_Spiral.folderpath = addpath
             self.manager.current = 'bad_habits'
 
-
-
     def callback_for_menu_items(self, *args):
         t = args[0]
         BH.person = str(t)
@@ -30,7 +28,6 @@ class Main(Screen):
             size_hint=[.8, .4],
             events_callback=self.my_callback, text_button_ok='Отмена', text_button_cancel='Продолжить',
             title='').open()
-
 
     def build(self):
         app = App.get_running_app()

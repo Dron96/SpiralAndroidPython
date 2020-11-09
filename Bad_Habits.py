@@ -28,8 +28,11 @@ class Bad_Habits(Screen):
             self.answer = True
             if (time.time() - self.bad_habits[self.person][0]) <= 30*60:
                 if self.bad_habits[self.person][1] != "":
-                    MDDialog(text='[size=50]Выберите руку, которой будете рисовать:[/size]', title='Выбор руки',
-                             events_callback=self.my_callback, text_button_ok='[size=50]Левая рука[/size]', text_button_cancel='[size=50]Правая рука[/size]',
+                    MDDialog(text='[size=50]Выберите руку, которой будете рисовать:[/size]',
+                             title='Выбор руки',
+                             events_callback=self.my_callback,
+                             text_button_ok='[size=50]Левая рука[/size]',
+                             text_button_cancel='[size=50]Правая рука[/size]',
                              size_hint=[.8, .4]).open()
             else:
                 self.answer = False
@@ -60,11 +63,15 @@ class Bad_Habits(Screen):
     def confirm(self):
         self.bad_habits_to_str()
         if self.person_habits_str == '':
-            MDDialog(text='[size=50]Выберите хотя бы один пункт.[/size]', title='Неправильное заполнение',
+            MDDialog(text='[size=50]Выберите хотя бы один пункт.[/size]',
+                     title='Неправильное заполнение',
                      size_hint=[.8, .4]).open()
         else:
-            MDDialog(text='[size=50]Выберите руку, которой будете рисовать:[/size]', title='Выбор руки',
-                     events_callback=self.my_callback, text_button_ok='[size=50]Левая рука[/size]', text_button_cancel='[size=50]Правая рука[/size]',
+            MDDialog(text='[size=50]Выберите руку, которой будете рисовать:[/size]',
+                     title='Выбор руки',
+                     events_callback=self.my_callback,
+                     text_button_ok='[size=50]Левая рука[/size]',
+                     text_button_cancel='[size=50]Правая рука[/size]',
                      size_hint=[.8, .4]).open()
 
     def my_callback(self, text_of_selection, popup_widget):

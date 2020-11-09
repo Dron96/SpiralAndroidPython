@@ -15,14 +15,14 @@ from Methods_Hands import Methods_Hands
 
 class Example1App(MDApp):
 
-      def build(self):
+    def build(self):
         # request_permissions([Permission.WRITE_EXTERNAL_STORAGE])
         return Root()
 
-      def on_start(self):
+    def on_start(self):
         EventLoop.window.bind(on_keyboard=self.hook_keyboard)
 
-      def hook_keyboard(self, window, key, *largs):
+    def hook_keyboard(self, window, key, *largs):
         if key == 27:
             app = App.get_running_app()
             if app.root.current != 'main':
@@ -30,8 +30,6 @@ class Example1App(MDApp):
             return True
 
 
-
 Example1App().run()
-
 
 __version__ = 0.1

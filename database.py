@@ -44,26 +44,47 @@ def create_tables(connection):
     """
     execute_query(connection, create_users_table)
 
-    create_users_table = """
-        CREATE TABLE IF NOT EXISTS examination (
-          id SERIAL PRIMARY KEY,
-          user_id INTEGER NOT NULL,
-          hand VARCHAR(1),
-          type VARCHAR(2),
-          bad_effects VARCHAR(6),
-          data DOUBLE precision [][],
-          FOREIGN KEY (user_id) REFERENCES users (id)
+    create_index = """
+    CREATE UNIQUE INDEX user_index ON users (
+    first_name,
+    second_name,
+    middle_name,
+    dob,
+    diagnosis
+    )
+    """
+    execute_query(connection, create_index)
+
+    create_examinations_table = """
+            CREATE TABLE IF NOT EXISTS examinations (
+              id SERIAL PRIMARY KEY,
+              user_id INTEGER NOT NULL,
+              hand VARCHAR(1),
+              type VARCHAR(2),
+              bad_effects VARCHAR(6),
+              exam_date date,
+              exam_time time,
+              data json,
+              FOREIGN KEY (user_id) REFERENCES users (id)
+            )
+            """
+    execute_query(connection, create_examinations_table)
+
+    create_index = """
+        CREATE UNIQUE INDEX exam_index ON examinations (
+        user_id,
+        exam_date,
+        exam_time
         )
         """
+    execute_query(connection, create_index)
 
-    execute_query(connection, create_users_table)
-
-
-conn = create_connection()
-create_tables(conn)
-query = """
-SELECT table_name FROM information_schema.tables
-WHERE table_schema NOT IN ('information_schema','pg_catalog')
-"""
-print(execute_query(conn, query).fetchall())
-conn.close()
+def create_database():
+    conn = create_connection()
+    create_tables(conn)
+    query = """
+    SELECT table_name FROM information_schema.tables
+    WHERE table_schema NOT IN ('information_schema','pg_catalog')
+    """
+    print(execute_query(conn, query).fetchall())
+    conn.close()

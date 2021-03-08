@@ -72,6 +72,16 @@
             on_press:
                 app.stop()
 
+        MDRectangleFlatIconButton:
+            id: btn_upload_to_DB
+            text: 'Отправить данные в БД'
+            width: (20 * self.font_size)
+            font_stile: 'H1'
+            pos_hint: {"center_x": .5}
+            icon: "cloud-upload"
+            on_press:
+                root.upload_to_db()
+
 
 
 <New_Patient>:

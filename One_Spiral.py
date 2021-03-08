@@ -34,7 +34,7 @@ class One_Spiral(Screen):
                                        str(Window.height) + '.csv')) == False:
             for i in range(self.ids.spiral.frames):
                 self.ids.spiral.generate_spiral(i, Spiral.path)
-        if self.ids.spiral.readfromfile() == True:
+        if self.ids.spiral.readfromfile():
             toast (str(len(self.ids.spiral.points)))
             self.ids.spiral.static_spiral(self.width)
         else:

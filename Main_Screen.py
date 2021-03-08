@@ -1,12 +1,18 @@
 from kivy.uix.screenmanager import Screen
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.app import App
-import os
 from graphics import Spiral, Two_Spiral
 from Root import Root
-from One_Spiral import One_Spiral
 from Bad_Habits import Bad_Habits as BH
 from kivymd.uix.dialog import MDDialog
+import os
+import re
+import pandas as pd
+from sqlalchemy.exc import IntegrityError
+from database import create_connection as create_connection
+from kivymd.toast.kivytoast.kivytoast import toast
+
+from upload_to_DB import upload
 
 
 class Main(Screen):
@@ -51,3 +57,106 @@ class Main(Screen):
                 )
             MDDropdownMenu(items=menu_items, width_mult=5, border_margin=10, _center=True,
                            max_height=app.root.height / 2, ver_growth="down", pos=self.pos).open(self)
+
+    def upload_to_db(self):
+        path = Root.path
+        exam_ind = {'patient_id': int,
+                    'hand': str,
+                    'type': str,
+                    'bad_effects': str,
+                    'exam_date': str,
+                    'exam_time': str,
+                    'data': dict
+                    }
+        new_names = {
+            "Фамилия": 'second_name',
+            "Имя": 'first_name',
+            "Отчество": 'middle_name',
+            "Дата рождения": 'dob',
+            "Диагноз": 'diagnosis',
+            "Пол": 'sex',
+            "Доминирующая рука": 'dominant_hand'
+        }
+        os.chdir(path)
+
+        info = pd.DataFrame()
+        folders = os.listdir(path)
+
+        toast('upload_to_db')
+
+        for folder in folders:
+            if os.path.isdir(folder):
+                files = os.listdir(folder)
+                os.chdir(folder)
+                df = pd.read_csv('Информация.txt', sep=': ', header=None, index_col=0)
+                info = df.transpose()
+
+                files.remove('Информация.txt')
+                examinations = pd.DataFrame(columns=exam_ind)
+                for file in files:
+                    data = pd.read_csv(file, names=['t', 'x', 'y'])
+                    data = data.to_json(orient='columns')
+                    exam = re.split('[_| ]', file)
+                    if len(exam) == 3:
+                        exam = {
+                            'hand': exam[0],
+                            'exam_date': exam[1],
+                            'exam_time': exam[2].rstrip('.csv'),
+                            'data': data
+                        }
+                    elif len(exam) == 5:
+                        exam = {
+                            'hand': exam[0],
+                            'type': exam[1],
+                            'bad_effects': exam[2],
+                            'exam_date': exam[3],
+                            'exam_time': exam[4].rstrip('.csv'),
+                            'data': data
+                        }
+                    exam = pd.DataFrame([exam], columns=exam.keys())
+                    examinations = pd.concat([examinations, exam])
+
+                info['Дата рождения'] = pd.to_datetime(info['Дата рождения'])
+                info.rename(new_names, axis=1)
+                try:
+                    info.loc[info['Пол'] == 'Мужской', 'Пол'] = True
+                    info.loc[info['Пол'] == 'Женский', 'Пол'] = False
+                except KeyError:
+                    pass
+                try:
+                    info.loc[info['Доминирующая рука'] == 'Левая', 'Доминирующая рука'] = 'L'
+                    info.loc[info['Доминирующая рука'] == 'Правая', 'Доминирующая рука'] = 'R'
+                    info.loc[info['Доминирующая рука'] == 'Обе', 'Доминирующая рука'] = 'B'
+                except KeyError:
+                    pass
+                try:
+                    info = info.rename(new_names, axis=1)
+                    print('nen', info)
+                    upload(info, 'patients')
+                except IntegrityError:
+                    pass
+                values = info[['first_name',
+                               'second_name',
+                               'middle_name',
+                               'diagnosis',
+                               'dob']].values
+                patient_id_query = """
+                SELECT id FROM patients WHERE
+                first_name = %s AND
+                second_name = %s AND
+                middle_name = %s AND
+                diagnosis = %s AND
+                dob = %s
+                """
+                conn = create_connection()
+                conn.autocommit = True
+                cursor = conn.cursor()
+                cursor.execute(patient_id_query, values.tolist()[0])
+                patient_id = cursor.fetchone()[0]
+                examinations['patient_id'] = patient_id
+                try:
+                    upload(examinations, 'examinations')
+                except IntegrityError:
+                    pass
+
+                os.chdir('../')

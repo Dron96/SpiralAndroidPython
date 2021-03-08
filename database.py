@@ -30,8 +30,8 @@ def execute_query(connection, query):
 
 
 def create_tables(connection):
-    create_users_table = """
-    CREATE TABLE IF NOT EXISTS users (
+    create_patients_table = """
+    CREATE TABLE IF NOT EXISTS patients (
       id SERIAL PRIMARY KEY,
       first_name TEXT NOT NULL,
       second_name TEXT NOT NULL,
@@ -42,10 +42,10 @@ def create_tables(connection):
       diagnosis VARCHAR(20)
     )
     """
-    execute_query(connection, create_users_table)
+    execute_query(connection, create_patients_table)
 
     create_index = """
-    CREATE UNIQUE INDEX user_index ON users (
+    CREATE UNIQUE INDEX patient_index ON patients (
     first_name,
     second_name,
     middle_name,
@@ -58,26 +58,27 @@ def create_tables(connection):
     create_examinations_table = """
             CREATE TABLE IF NOT EXISTS examinations (
               id SERIAL PRIMARY KEY,
-              user_id INTEGER NOT NULL,
+              patient_id INTEGER NOT NULL,
               hand VARCHAR(1),
               type VARCHAR(2),
               bad_effects VARCHAR(6),
               exam_date date,
               exam_time time,
               data json,
-              FOREIGN KEY (user_id) REFERENCES users (id)
+              FOREIGN KEY (patient_id) REFERENCES patients (id)
             )
             """
     execute_query(connection, create_examinations_table)
 
     create_index = """
         CREATE UNIQUE INDEX exam_index ON examinations (
-        user_id,
+        patient_id,
         exam_date,
         exam_time
         )
         """
     execute_query(connection, create_index)
+
 
 def create_database():
     conn = create_connection()
@@ -88,3 +89,5 @@ def create_database():
     """
     print(execute_query(conn, query).fetchall())
     conn.close()
+
+# create_database()
